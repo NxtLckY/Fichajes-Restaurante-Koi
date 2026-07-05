@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Restaurante Koi · Parte de fichajes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Work+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4DCB8;
+    --bg-panel:#FAEAD2;
+    --bg-panel-2:#F0CE9E;
+    --paper:#FFF7EA;
+    --paper-line:#E2C08C;
+    --ink:#4A2410;
+    --ink-soft:#8C6239;
+    --jefe:#7A1F1F;
+    --gerente:#B23A2E;
+    --encargado:#E3A188;
+    --empleado:#8A6F5C;
+    --gold:#B8860B;
+    --gold-light:#D6A93B;
+    --green:#3F7A57;
+    --line:#8A3A2A;
+    --line-soft:#D8B486;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: linear-gradient(rgba(255,247,234,0.72), rgba(255,247,234,0.72)), url('koi-bg.png') center/cover no-repeat;
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 60px 0;
+    background-attachment: fixed;
+  }
+  .display{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:0.04em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    padding:34px 24px 10px;
+    text-align:center;
+    border-bottom:2px solid var(--line);
+    background:
+      repeating-linear-gradient(135deg, rgba(122,31,31,0.02) 0 2px, transparent 2px 6px);
+    position:relative;
+  }
+  .login-btn-top{
+    position:absolute; top:18px; right:24px; z-index:3;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.28em;
+    color:var(--gerente);
+    margin-bottom:6px;
+  }
+  h1.restaurant{
+    font-size:clamp(34px,6vw,58px);
+    margin:0;
+    color:var(--jefe);
+    line-height:1;
+    font-family:'Noto Serif SC', 'SimSun', 'STSong', 'Songti SC', serif;
+    letter-spacing:0.04em;
+  }
+  h1.restaurant span{color:var(--gerente);}
+  .subtitle{
+    color:var(--ink-soft);
+    font-size:14px;
+    margin-top:8px;
+  }
+  .week-row{
+    display:flex; justify-content:center; align-items:center; gap:10px;
+    margin-top:14px; flex-wrap:wrap;
+  }
+  .week-row input{
+    background:transparent; border:none; border-bottom:1px dashed var(--jefe);
+    color:var(--jefe); font-family:'IBM Plex Mono',monospace; font-size:13px;
+    text-align:center; padding:4px 2px; width:230px;
+  }
+  .week-row input:focus{outline:none; border-bottom:1px solid var(--gerente);}
+
+  /* ---------- TICKET RAIL (signature) ---------- */
+  .rail-wrap{
+    padding:38px 24px 10px;
+    display:flex;
+    justify-content:center;
+  }
+  .rail-inner{
+    position:relative;
+    width:100%;
+    max-width:980px;
+    padding-top:34px;
+  }
+  .rail-rod{
+    position:absolute; top:14px; left:0; right:0; height:8px;
+    background:linear-gradient(180deg,#9C3A2A 0%, var(--jefe) 45%, #4E1414 100%);
+    border-radius:4px;
+    box-shadow:0 3px 6px rgba(74,36,16,0.35);
+  }
+  .rail-rod::before, .rail-rod::after{
+    content:""; position:absolute; top:-6px; width:18px; height:18px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #C97A5C, #4E1414 75%);
+    box-shadow:0 2px 3px rgba(74,36,16,0.4);
+  }
+  .rail-rod::before{left:-9px;}
+  .rail-rod::after{right:-9px;}
+
+  .tickets{
+    display:flex; justify-content:center; gap:26px; flex-wrap:wrap;
+    position:relative;
+  }
+  .ticket{
+    background:var(--paper);
+    color:var(--ink);
+    width:230px;
+    padding:26px 18px 20px;
+    position:relative;
+    text-align:center;
+    box-shadow:0 12px 20px rgba(74,36,16,0.22);
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 92%,
+      92% 100%, 84% 92%, 76% 100%, 68% 92%, 60% 100%, 52% 92%, 44% 100%,
+      36% 92%, 28% 100%, 20% 92%, 12% 100%, 4% 92%, 0% 100%
+    );
+    animation:settle 700ms ease-out both;
+  }
+  .ticket.main{
+    width:270px;
+    padding-top:30px;
+    transform:rotate(-2deg);
+    z-index:2;
+  }
+  .ticket.sub{transform:rotate(2deg); margin-top:14px;}
+  .ticket.sub:nth-of-type(3){transform:rotate(-3deg);}
+  .clip{
+    position:absolute; top:-16px; left:50%; transform:translateX(-50%);
+    width:14px; height:26px; border-radius:3px;
+    background:linear-gradient(180deg,#9C3A2A,#4E1414);
+    box-shadow:0 2px 3px rgba(74,36,16,0.4);
+  }
+  @keyframes settle{
+    0%{transform:rotate(0deg) translateY(-14px); opacity:0;}
+    100%{opacity:1;}
+  }
+  .ticket .t-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .ticket .t-value{
+    font-family:'Oswald',sans-serif;
+    font-size:34px; font-weight:600; margin-top:6px;
+    color:var(--jefe);
+  }
+  .ticket.main .t-value{font-size:44px;}
+  .ticket .t-value.green{color:var(--green);}
+  .ticket .t-foot{
+    margin-top:8px; font-size:11px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;
+  }
+  .ticket::after{
+    content:""; position:absolute; left:14px; right:14px; top:64%;
+    border-top:1px dashed var(--paper-line);
+  }
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    max-width:1180px; margin:44px auto 18px; padding:0 24px;
+    display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .controls-left{display:flex; gap:10px; flex-wrap:wrap;}
+  .table-wrap{
+    max-width:1180px; margin:0 auto 30px; padding:0 24px;
+    overflow-x:visible;
+    display:flex; justify-content:center;
+  }
+  .table-pane{width:100%; display:flex; justify-content:center;}
+  .table-pane.hidden{display:none;}
+  .sheet-title{display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 0 12px; width:100%;}
+  .sheet-title h3{margin:0; color:var(--jefe); font-family:'Noto Serif SC', serif;}
+  .police-table{width:100%; max-width:980px; border-collapse:collapse; background:var(--bg-panel); border:2px solid var(--line);}
+  .police-table th, .police-table td{border:1px solid var(--line-soft); padding:10px 12px; text-align:left; font-size:13px;}
+  .police-table th{background:var(--paper); color:var(--jefe); font-family:'IBM Plex Mono',monospace;}
+  .police-table input, .police-table select{width:100%; border:1px solid var(--line-soft); border-radius:8px; padding:8px 10px; background:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:13px;}
+  .police-date-btn{background:var(--jefe); color:#FFF6E9; border:none; border-radius:6px; padding:7px 10px; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:11px; white-space:nowrap;}
+  .police-date-btn:hover{background:var(--gerente);} 
+  .police-table tfoot td{background:var(--paper); font-weight:700; color:var(--jefe); font-family:'IBM Plex Mono',monospace;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px; letter-spacing:0.04em;
+    background:var(--jefe); color:#FFF6E9; border:none; padding:10px 16px;
+    border-radius:4px; cursor:pointer; font-weight:600;
+    transition:transform 120ms ease, background 120ms ease;
+  }
+  .btn:hover{background:var(--gerente); transform:translateY(-1px);}
+  .btn.ghost{
+    background:transparent; color:var(--jefe); border:1px solid var(--line);
+  }
+  .btn.ghost:hover{border-color:var(--gerente); color:var(--gerente); background:rgba(122,31,31,0.06);}
+
+  /* ---------- TABLE ---------- */
+  table{
+    border-collapse:collapse;
+    width:auto;
+    margin:0 auto;
+    min-width:0;
+    background:var(--bg-panel);
+    border:2px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  thead th{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase; letter-spacing:0.05em; font-size:13px; font-weight:600;
+    color:var(--jefe);
+    background:var(--paper);
+    padding:12px 8px;
+    border-bottom:3px solid var(--line);
+    border-right:1px solid var(--line-soft);
+    white-space:nowrap;
+  }
+  thead th.small{font-size:11px; color:var(--gerente);}
+  tbody tr{border-bottom:1px solid var(--line-soft);}
+  tbody tr:nth-child(even){background:var(--bg-panel-2);}
+  tbody tr:hover{background:#F5D7A9;}
+  td{
+    padding:8px 6px;
+    text-align:center;
+    vertical-align:middle;
+    border-right:1px solid var(--line-soft);
+  }
+  td.empleado-cell{text-align:left; padding-left:12px;}
+  td.empleado-cell input{
+    width:220px; background:transparent; border:none; border-bottom:1px solid transparent;
+    color:var(--ink); font-family:'Work Sans',sans-serif; font-size:14px; padding:4px 2px;
+  }
+  td.empleado-cell input:focus{outline:none; border-bottom:1px solid var(--jefe);}
+  td.empleado-cell input::placeholder{color:#B08F6E;}
+
+  select.contract-select{
+    appearance:none; -webkit-appearance:none;
+    border:none; border-radius:14px; padding:6px 26px 6px 14px;
+    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:12px;
+    cursor:pointer; text-align:center;
+    background-repeat:no-repeat; background-position:right 8px center; background-size:9px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M0 0 L9 0 L4.5 6 Z' fill='%23FFF7EA'/></svg>");
+  }
+  select.c-jefe{background-color:var(--jefe); color:#FFF6E9;}
+  select.c-gerente{background-color:var(--gerente); color:#FFF6E9;}
+  select.c-encargado{background-color:var(--encargado); color:#3A1E14;}
+  select.c-empleado{background-color:var(--empleado); color:#FFF6E9;}
+  select.c-empleado option, select.c-jefe option, select.c-gerente option, select.c-encargado option{
+    background:var(--paper); color:var(--ink);
+  }
+
+  td.exento{
+    font-family:'IBM Plex Mono',monospace; font-style:italic; color:var(--ink-soft); font-size:12.5px;
+    letter-spacing:0.04em;
+  }
+  input.hour-input{
+    width:70px; background:var(--paper); border:1px solid var(--line-soft);
+    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13px;
+    text-align:center; border-radius:4px; padding:5px 2px;
+  }
+  input.hour-input:focus{outline:none; border-color:var(--jefe);} 
+  td.day-cell{padding:8px 6px; min-width:92px;}
+  .day-controls{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .service-btn{
+    background:var(--jefe); color:#FFF6E9; border:none; border-radius:999px;
+    padding:5px 8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+    cursor:pointer; font-weight:700; box-shadow:0 2px 6px rgba(74,36,16,0.14);
+  }
+  .service-btn.active{background:var(--green);}
+  .service-btn:hover{transform:translateY(-1px);}
+  td.total-horas{font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:var(--jefe); font-weight:700; min-width:110px;}
+
+  input.money-input{
+    width:78px; background:var(--paper); border:1px solid var(--line-soft);
+    color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13px;
+    text-align:right; border-radius:4px; padding:5px 6px;
+  }
+  input.money-input:focus{outline:none; border-color:var(--jefe);}
+  input.money-input.prima{color:var(--gold); font-weight:700;}
+
+  td.prima-value{
+    white-space:nowrap;
+    min-width:120px;
+    text-align:right;
+    padding-right:10px;
+    font-weight:700;
+    color:var(--gold);
+  }
+
+  input[type="checkbox"].paid{
+    width:18px; height:18px; accent-color:var(--green); cursor:pointer;
+  }
+  .del-btn{
+    background:none; border:1px solid var(--line-soft); color:var(--jefe); cursor:pointer;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; padding:5px 9px;
+    border-radius:4px; white-space:nowrap;
+  }
+  .del-btn:hover{background:var(--jefe); color:#FFF6E9; border-color:var(--jefe);}
+
+  tfoot td{
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13.5px;
+    background:var(--paper); border-top:3px solid var(--line);
+    padding:12px 6px;
+  }
+  tfoot{display:none;}
+  tfoot td.label{text-align:right; color:var(--ink-soft); font-family:'Oswald',sans-serif; letter-spacing:0.05em;}
+  tfoot td.value{color:var(--jefe);}
+
+  footer.note{
+    text-align:center; color:var(--ink-soft); font-size:12px; margin-top:18px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  .auth-panel{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    padding:32px 20px; background:rgba(74,36,16,0.56); z-index:20;
+  }
+  .auth-card{
+    width:min(460px, 100%); background:var(--bg-panel); border:2px solid var(--line);
+    box-shadow:0 16px 30px rgba(74,36,16,0.16); border-radius:14px; padding:28px 24px;
+    text-align:center;
+  }
+  .auth-card h2{margin:8px 0 8px; color:var(--jefe); font-family:'Noto Serif SC', serif;}
+  .auth-card p{color:var(--ink-soft); margin:0 0 18px; line-height:1.5;}
+  .auth-form{display:flex; flex-direction:column; gap:12px;}
+  .auth-form input{
+    border:1px solid var(--line-soft); border-radius:8px; padding:10px 12px;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; background:var(--paper);
+  }
+  .auth-message{font-size:13px; min-height:18px; color:var(--green); font-family:'IBM Plex Mono',monospace;}
+  .auth-message.error{color:var(--gerente);} 
+  .app-content.hidden, .auth-panel.hidden, .archive-panel.hidden{display:none;}
+  .archive-panel{
+    max-width:1180px; margin:36px auto 0; padding:0 24px 24px;
+    background:rgba(255,247,234,0.84); border:1px solid var(--line-soft); border-radius:12px;
+    box-shadow:0 10px 20px rgba(74,36,16,0.08);
+  }
+  .archive-header{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding:18px 0 10px;}
+  .archive-header h3{margin:0; color:var(--jefe); font-family:'Noto Serif SC', serif;}
+  .archive-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px;}
+  .archive-label{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft);}
+  .archive-select{border:1px solid var(--line-soft); border-radius:8px; padding:8px 10px; background:var(--paper); color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13px; min-width:220px;}
+  .archive-list{display:grid; gap:10px; margin-top:8px;}
+  .archive-item{
+    border:1px solid var(--line-soft); background:var(--paper); border-radius:10px;
+    padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:12px;
+    cursor:pointer; text-align:left; color:var(--ink);
+  }
+  .archive-item.active{border-color:var(--jefe); background:#F9E2C4;}
+  .archive-item span{font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+  .archive-empty{padding:14px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+  .archive-detail{margin-top:14px; padding:12px 0 6px;}
+  .archive-detail h4{margin:0 0 10px; color:var(--jefe);}
+  .archive-table-wrap{overflow-x:auto;}
+  .archive-table{width:100%; border-collapse:collapse; background:var(--paper);}
+  .archive-table th, .archive-table td{border:1px solid var(--line-soft); padding:8px 10px; text-align:left; font-size:13px;}
+  .archive-table th{background:var(--bg-panel-2); color:var(--jefe); font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:640px){
+    .ticket{width:170px; padding:20px 12px 16px;}
+    .ticket.main{width:200px;}
+    .ticket .t-value{font-size:26px;}
+    .ticket.main .t-value{font-size:32px;}
+    h1.restaurant{font-size:34px;}
+  }
+</style>
+</head>
+<body>
+<div id="authPanel" class="auth-panel hidden">
+  <div class="auth-card">
+    <div class="eyebrow">Acceso protegido</div>
+    <h2>Semanas archivadas</h2>
+    <p>Introduce el usuario y la contraseña para ver las semanas guardadas en la base de datos local de esta página.</p>
+    <div class="auth-form">
+      <input id="authUser" type="text" placeholder="Usuario" autocomplete="username">
+      <input id="authPass" type="password" placeholder="Contraseña" autocomplete="current-password">
+      <button class="btn" id="loginBtn">Entrar</button>
+      <div id="authMessage" class="auth-message"></div>
+    </div>
+  </div>
+</div>
+
+<div id="appContent" class="app-content">
+  <header class="top">
+    <button class="btn ghost login-btn-top" id="openAuthBtn">Iniciar sesión</button>
+    <div class="eyebrow">Parte semanal de horas y primas</div>
+    <h1 class="restaurant">尺乇丂ㄒ卂ㄩ尺卂几ㄒ乇</h1>
+    <h1 class="restaurant">Ҝㄖ丨</h1>
+    <div class="subtitle">Cocina china · Los Santos</div>
+    <div class="week-row">
+      <span style="color:var(--ink-soft);">Semana:</span>
+      <input id="weekLabel" type="text" value="">
+    </div>
+  </header>
+
+  <div class="rail-wrap">
+    <div class="rail-inner">
+      <div class="rail-rod"></div>
+      <!-- Tickets removed per user request -->
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="controls-left">
+      <button class="btn ghost" id="viewToggleBtn">Tabla para policías</button>
+    </div>
+    <button class="btn ghost" id="addRowBtn">+ Añadir empleado</button>
+  </div>
+
+  <div class="table-wrap">
+    <div id="kitchenTablePane" class="table-pane">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left; padding-left:12px;">Empleado/a</th>
+            <th>Contrato</th>
+            <th class="small">Lun</th>
+            <th class="small">Mar</th>
+            <th class="small">Mié</th>
+            <th class="small">Jue</th>
+            <th class="small">Vie</th>
+            <th class="small">Sáb</th>
+            <th class="small">Dom</th>
+            <th>Total h.</th>
+            <th>Prima</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="9" class="label"></td>
+            <td class="value"></td>
+            <td class="value"></td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div id="policeTablePane" class="table-pane hidden">
+      <div style="width:100%; max-width:900px;">
+        <div class="sheet-title">
+          <h3>Tabla para policías</h3>
+          <button class="btn" id="addPoliceRowBtn">+ Añadir fila</button>
+        </div>
+        <table class="police-table">
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Número de placa</th>
+              <th>Tipo de menú</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="policeTbody"></tbody>
+          <tbody>
+            <tr>
+              <td colspan="2"><strong>Total menús</strong></td>
+              <td id="policeMenuTotal"><strong>0,00 €</strong></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="archive-panel hidden" id="archivePanel">
+    <div class="archive-header">
+      <h3>Semanas archivadas</h3>
+      <button class="btn ghost" id="logoutBtn">Cerrar sesión</button>
+    </div>
+    <div class="archive-controls">
+      <label class="archive-label" for="archiveWeekSelect">Ver semana</label>
+      <select id="archiveWeekSelect" class="archive-select">
+        <option value="">No hay semanas archivadas</option>
+      </select>
+    </div>
+    <div id="archiveDetail" class="archive-detail"></div>
+  </div>
+
+  <footer class="note">Hoja de fichajes para Restaurante Koi — Formato de horas: H:MM:SS.</footer>
+</div>
+
+<script>
+const CONTRACTS = {
+  "Jefe/a":      {cls:"c-jefe",      exento:true},
+  "Gerente":     {cls:"c-gerente",   exento:true},
+  "Encargado/a": {cls:"c-encargado", exento:true},
+  "Empleado/a":  {cls:"c-empleado",  exento:false}
+};
+
+const STORAGE_KEY = 'koi-fichajes-state-v1';
+const WEEK_KEY = 'koi-fichajes-week-v1';
+const WEEK_LABEL_KEY = 'koi-fichajes-week-label-v1';
+const POLICE_STORAGE_KEY = 'koi-police-state-v1';
+const VIEW_STORAGE_KEY = 'koi-view-state-v1';
+const DB_NAME = 'koi-fichajes-db';
+const DB_STORE = 'weeklyRecords';
+const AUTH_USER = 'sopis';
+const AUTH_PASS = '1234';
+
+let uid = 1;
+let state = [];
+let currentWeekKey = '';
+let currentWeekLabel = '';
+let dbPromise = null;
+let isAuthenticated = false;
+let archivedWeeks = [];
+let selectedArchiveWeekKey = null;
+let policeRows = [];
+let currentView = 'kitchen';
+
+function createInitialState(){
+  uid = 1;
+  return [
+    mk("Yuna Chen","Jefe/a"),
+    mk("Jia Ling","Gerente"),
+    mk("","Encargado/a"),
+    mk("","Encargado/a"),
+    mk("","Empleado/a"),
+    mk("","Empleado/a"),
+    mk("","Empleado/a"),
+    mk("","Empleado/a"),
+  ];
+}
+
+function mk(name, contract){
+  return {
+    id: uid++,
+    name: name || "",
+    contract: contract,
+    hours: [0,0,0,0,0,0,0],
+    serviceActive: [false,false,false,false,false,false,false],
+    serviceStart: [null,null,null,null,null,null,null],
+    suma: 0,
+    prima: 0,
+    pagado: false
+  };
+}
+
+function normalizeEmp(emp, fallbackContract = 'Empleado/a'){
+  if(!emp || typeof emp !== 'object') return mk('', fallbackContract);
+  const contract = CONTRACTS[emp.contract] ? emp.contract : fallbackContract;
+  const hours = Array.isArray(emp.hours) ? emp.hours.slice(0,7) : [0,0,0,0,0,0,0];
+  while(hours.length < 7) hours.push(0);
+  const serviceActive = Array.isArray(emp.serviceActive) ? emp.serviceActive.slice(0,7) : [false,false,false,false,false,false,false];
+  while(serviceActive.length < 7) serviceActive.push(false);
+  const serviceStart = Array.isArray(emp.serviceStart) ? emp.serviceStart.slice(0,7) : [null,null,null,null,null,null,null];
+  while(serviceStart.length < 7) serviceStart.push(null);
+  return {
+    id: Number(emp.id) || uid++,
+    name: emp.name || '',
+    contract,
+    hours: hours.map(v => Number(v) || 0),
+    serviceActive: serviceActive.map(v => Boolean(v)),
+    serviceStart,
+    suma: Number(emp.suma) || 0,
+    prima: Number(emp.prima) || 0,
+    pagado: Boolean(emp.pagado)
+  };
+}
+
+function normalizeState(arr){
+  if(!Array.isArray(arr)) return createInitialState();
+  return arr.map(emp => normalizeEmp(emp));
+}
+
+function serializeState(list = state){
+  return (list || []).map(emp => ({
+    id: emp.id,
+    name: emp.name || '',
+    contract: emp.contract,
+    hours: Array.isArray(emp.hours) ? emp.hours.slice(0,7) : [0,0,0,0,0,0,0],
+    serviceActive: Array.isArray(emp.serviceActive) ? emp.serviceActive.slice(0,7) : [false,false,false,false,false,false,false],
+    serviceStart: Array.isArray(emp.serviceStart) ? emp.serviceStart.slice(0,7) : [null,null,null,null,null,null,null],
+    suma: Number(emp.suma) || 0,
+    prima: Number(emp.prima) || 0,
+    pagado: Boolean(emp.pagado)
+  }));
+}
+
+function openWeeklyDb(){
+  if(dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if(!db.objectStoreNames.contains(DB_STORE)){
+        db.createObjectStore(DB_STORE, {keyPath: 'weekKey'});
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  return dbPromise;
+}
+
+function saveCurrentWeekToDb(weekKey = currentWeekKey, weekLabel = currentWeekLabel, snapshot = state){
+  return openWeeklyDb().then((db) => new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    store.put({
+      weekKey,
+      weekLabel,
+      employees: serializeState(snapshot),
+      savedAt: new Date().toISOString()
+    });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
+function clearDemoArchivedWeek(){
+  const demoDate = new Date();
+  demoDate.setDate(demoDate.getDate() - 7);
+  const weekKey = getWeekKey(demoDate);
+  return openWeeklyDb().then((db) => new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    store.delete(weekKey);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
+function money(n){
+  return (Math.round((n||0)*100)/100).toLocaleString('es-ES',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+}
+
+const PRIMA_RATE = 40; // $ per hour
+function moneyDollar(n){
+  return (Math.round((n||0)*100)/100).toLocaleString('es-ES',{minimumFractionDigits:2, maximumFractionDigits:2}) + " $";
+}
+
+function getMonday(date = new Date()){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function getWeekKey(date = new Date()){
+  const start = getMonday(date);
+  return `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;
+}
+
+function formatWeekLabel(date = new Date()){
+  const start = getMonday(date);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  const monthStart = start.toLocaleDateString('es-ES', {month:'long'});
+  const monthEnd = end.toLocaleDateString('es-ES', {month:'long'});
+  const year = end.getFullYear();
+  return `Del ${start.getDate()} al ${end.getDate()} de ${monthEnd} de ${year}`;
+}
+
+function setWeekLabel(label){
+  currentWeekLabel = label;
+  const input = document.getElementById('weekLabel');
+  if(input) input.value = label;
+}
+
+function createInitialPoliceRows(){
+  return [{id:1, day:'', plate:'', menuType:''}];
+}
+
+function normalizePoliceRows(arr){
+  if(!Array.isArray(arr)) return createInitialPoliceRows();
+  return arr.filter(Boolean).map((row, index) => ({
+    id: Number(row.id) || index + 1,
+    day: row.day || '',
+    plate: row.plate || '',
+    menuType: row.menuType || ''
+  })).filter(row => row.day || row.plate || row.menuType || row.id);
+}
+
+function savePoliceState(){
+  localStorage.setItem(POLICE_STORAGE_KEY, JSON.stringify(policeRows));
+  localStorage.setItem(VIEW_STORAGE_KEY, currentView);
+}
+
+function loadPoliceState(){
+  try {
+    const saved = localStorage.getItem(POLICE_STORAGE_KEY);
+    policeRows = normalizePoliceRows(saved ? JSON.parse(saved) : []);
+  } catch {
+    policeRows = createInitialPoliceRows();
+  }
+  if(!policeRows.length) policeRows = createInitialPoliceRows();
+  const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+  currentView = savedView === 'police' ? 'police' : 'kitchen';
+}
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(WEEK_KEY, currentWeekKey);
+  localStorage.setItem(WEEK_LABEL_KEY, currentWeekLabel);
+  savePoliceState();
+  if(currentWeekKey){
+    saveCurrentWeekToDb(currentWeekKey, currentWeekLabel, state).catch(()=>{});
+  }
+}
+
+function loadState(){
+  currentWeekKey = getWeekKey();
+  const savedWeekKey = localStorage.getItem(WEEK_KEY);
+  const savedWeekLabel = localStorage.getItem(WEEK_LABEL_KEY);
+  const savedState = localStorage.getItem(STORAGE_KEY);
+
+  if(savedWeekKey && savedWeekKey !== currentWeekKey && savedState){
+    try {
+      saveCurrentWeekToDb(savedWeekKey, savedWeekLabel || formatWeekLabel(new Date(savedWeekKey)), JSON.parse(savedState));
+    } catch {
+      saveCurrentWeekToDb(savedWeekKey, savedWeekLabel || formatWeekLabel(new Date(savedWeekKey)), []);
+    }
+  }
+
+  if(savedState && savedWeekKey === currentWeekKey){
+    try {
+      state = normalizeState(JSON.parse(savedState));
+    } catch {
+      state = createInitialState();
+    }
+  } else {
+    state = createInitialState();
+  }
+
+  if(state.length){
+    uid = state.reduce((max, emp)=>Math.max(max, emp.id), 0) + 1;
+  } else {
+    state = createInitialState();
+    uid = state.reduce((max, emp)=>Math.max(max, emp.id), 0) + 1;
+  }
+
+  const nextLabel = formatWeekLabel();
+  if(savedWeekKey === currentWeekKey && savedWeekLabel){
+    setWeekLabel(savedWeekLabel);
+  } else {
+    setWeekLabel(nextLabel);
+  }
+
+  loadPoliceState();
+  saveState();
+}
+
+/* ---------- duration (H:MM:SS) masking ---------- */
+function digitsToHMS(digits){
+  digits = digits.replace(/\D/g,'').slice(-6);
+  let ss = digits.slice(-2).padStart(2,'0');
+  let mm = digits.slice(-4,-2).padStart(2,'0');
+  let hh = digits.slice(0, Math.max(digits.length-4,0));
+  if(hh === '') hh = '0';
+  hh = String(parseInt(hh,10));
+  if(parseInt(mm,10) > 59) mm = '59';
+  if(parseInt(ss,10) > 59) ss = '59';
+  return {hh, mm, ss};
+}
+function hmsStringFromDigits(digits){
+  const {hh,mm,ss} = digitsToHMS(digits);
+  return `${hh}:${mm}:${ss}`;
+}
+function hmsStringToSeconds(str){
+  const parts = (str||'0:00:00').split(':').map(p=>parseInt(p,10)||0);
+  while(parts.length < 3) parts.unshift(0);
+  const [hh,mm,ss] = parts;
+  return hh*3600 + mm*60 + ss;
+}
+function secondsToHMS(totalSeconds){
+  totalSeconds = Math.max(0, Math.round(totalSeconds||0));
+  const hh = Math.floor(totalSeconds/3600);
+  const mm = Math.floor((totalSeconds%3600)/60);
+  const ss = totalSeconds%60;
+  return `${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+}
+
+function daySecondsFor(emp, dayIdx){
+  if(!emp || !CONTRACTS[emp.contract] || CONTRACTS[emp.contract].exento) return 0;
+  const hours = Array.isArray(emp.hours) ? emp.hours : [0,0,0,0,0,0,0];
+  const serviceActive = Array.isArray(emp.serviceActive) ? emp.serviceActive : [false,false,false,false,false,false,false];
+  const serviceStart = Array.isArray(emp.serviceStart) ? emp.serviceStart : [null,null,null,null,null,null,null];
+  const base = Number(hours[dayIdx]) || 0;
+  if(serviceActive[dayIdx] && serviceStart[dayIdx]){
+    return base + Math.floor((Date.now() - Number(serviceStart[dayIdx])) / 1000);
+  }
+  return base;
+}
+
+function totalSecondsFor(emp){
+  if(!emp || !CONTRACTS[emp.contract] || CONTRACTS[emp.contract].exento) return 0;
+  const hours = Array.isArray(emp.hours) ? emp.hours : [0,0,0,0,0,0,0];
+  return hours.reduce((a,b)=>a+(Number(b)||0),0);
+}
+
+function render(){
+  const tbody = document.getElementById('tbody');
+  if(!tbody) return;
+  tbody.innerHTML = state.map(rowHTML).join('');
+  computeTotals();
+}
+
+function getMenuPrice(menuType){
+  const prices = { '3x3': 3, '5x5': 5, '10x10': 10 };
+  return prices[menuType] || 0;
+}
+
+function renderPoliceMenuTotal(){
+  const totalEl = document.getElementById('policeMenuTotal');
+  if(!totalEl) return;
+  const total = policeRows.reduce((sum, row) => sum + getMenuPrice(row.menuType), 0);
+  totalEl.textContent = `${total.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} $`;
+}
+
+function renderPoliceTable(){
+  const tbody = document.getElementById('policeTbody');
+  if(!tbody) return;
+  tbody.innerHTML = policeRows.map((row) => `
+    <tr>
+      <td>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" data-id="${row.id}" data-field="day" value="${escapeHtml(row.day)}" placeholder="Ej. DD/MM/AAAA">
+          <button class="police-date-btn" data-id="${row.id}" data-action="set-today-date" title="Poner fecha actual">Hoy</button>
+        </div>
+      </td>
+      <td><input type="text" data-id="${row.id}" data-field="plate" value="${escapeHtml(row.plate)}" placeholder="Ej. 100"></td>
+      <td>
+        <select data-id="${row.id}" data-field="menuType">
+          <option value="" ${row.menuType === '' ? 'selected' : ''}>Sin menú</option>
+          <option value="3x3" ${row.menuType === '3x3' ? 'selected' : ''}>3x3 (3 $)</option>
+          <option value="5x5" ${row.menuType === '5x5' ? 'selected' : ''}>5x5 (5 $)</option>
+          <option value="10x10" ${row.menuType === '10x10' ? 'selected' : ''}>10x10 (10 $)</option>
+        </select>
+      </td>
+      <td><button class="del-btn" data-id="${row.id}" data-action="delete-police" title="Quitar fila">Quitar</button></td>
+    </tr>
+  `).join('');
+  renderPoliceMenuTotal();
+}
+
+function setView(view){
+  currentView = view;
+  const kitchenPane = document.getElementById('kitchenTablePane');
+  const policePane = document.getElementById('policeTablePane');
+  const toggleBtn = document.getElementById('viewToggleBtn');
+  if(kitchenPane) kitchenPane.classList.toggle('hidden', view !== 'kitchen');
+  if(policePane) policePane.classList.toggle('hidden', view !== 'police');
+  if(toggleBtn) toggleBtn.textContent = view === 'kitchen' ? 'Tabla para policías' : 'Volver a fichajes';
+  savePoliceState();
+}
+
+function toggleView(){
+  setView(currentView === 'kitchen' ? 'police' : 'kitchen');
+}
+
+function rowHTML(emp){
+  const meta = CONTRACTS[emp.contract];
+  let dayCells;
+  if(meta.exento){
+    dayCells = `<td class="exento" colspan="7">Exento/a de fichar</td>`;
+  } else {
+    dayCells = emp.hours.map((secs,i)=>`
+      <td class="day-cell">
+        <div class="day-controls">
+          <input class="hour-input" type="text" inputmode="numeric"
+            data-id="${emp.id}" data-day="${i}" value="${secondsToHMS(daySecondsFor(emp,i))}" placeholder="0:00:00" maxlength="8">
+          <button class="service-btn ${emp.serviceActive[i] ? 'active' : ''}" data-id="${emp.id}" data-day="${i}" data-action="toggle-service">
+            ${emp.serviceActive[i] ? 'Salir' : 'Entrar'}
+          </button>
+        </div>
+      </td>
+    `).join('');
+  }
+
+  const options = Object.keys(CONTRACTS).map(c =>
+    `<option value="${c}" ${c===emp.contract?'selected':''}>${c}</option>`
+  ).join('');
+
+  return `
+  <tr>
+    <td class="empleado-cell">
+      <input type="text" data-id="${emp.id}" data-field="name" value="${emp.name}" placeholder="Nombre">
+    </td>
+    <td>
+      <select class="contract-select ${meta.cls}" data-id="${emp.id}" data-field="contract">
+        ${options}
+      </select>
+    </td>
+    ${dayCells}
+    <td class="total-horas">${secondsToHMS(totalSecondsFor(emp))}</td>
+    <td class="prima-value" data-id="${emp.id}">${moneyDollar(Math.ceil(totalSecondsFor(emp)/3600)*PRIMA_RATE)}</td>
+    <td><button class="del-btn" data-id="${emp.id}" data-action="delete" title="Quitar empleado/a">Quitar</button></td>
+  </tr>`;
+}
+
+function computeTotals(){
+  let sumSecs=0, sumPrima=0;
+  state.forEach(emp=>{
+    const secs = totalSecondsFor(emp);
+    sumSecs += secs;
+    const hours = secs/3600;
+    const p = Math.ceil(hours) * PRIMA_RATE;
+    sumPrima += p;
+  });
+  // Footer values removed per user request — totals are not displayed at bottom
+}
+
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
+
+function updateAuthButton(){
+  const btn = document.getElementById('openAuthBtn');
+  if(btn) btn.textContent = isAuthenticated ? 'Cerrar sesión' : 'Iniciar sesión';
+}
+
+function setAuthState(auth, showModal = false){
+  isAuthenticated = auth;
+  const authPanel = document.getElementById('authPanel');
+  const appContent = document.getElementById('appContent');
+  const archivePanel = document.getElementById('archivePanel');
+  if(authPanel) authPanel.classList.toggle('hidden', !showModal && !auth);
+  if(appContent) appContent.classList.remove('hidden');
+  if(archivePanel) archivePanel.classList.toggle('hidden', !auth);
+  if(auth){
+    localStorage.setItem('koi-auth', '1');
+    loadArchivedWeeks();
+  } else {
+    localStorage.removeItem('koi-auth');
+  }
+  updateAuthButton();
+}
+
+function showAuthModal(){
+  const authPanel = document.getElementById('authPanel');
+  if(authPanel) authPanel.classList.remove('hidden');
+  showAuthMessage('');
+}
+
+function hideAuthModal(){
+  const authPanel = document.getElementById('authPanel');
+  if(authPanel) authPanel.classList.add('hidden');
+}
+
+function showAuthMessage(message, isError = false){
+  const el = document.getElementById('authMessage');
+  if(!el) return;
+  el.textContent = message;
+  el.classList.toggle('error', isError);
+}
+
+function handleLogin(){
+  const user = document.getElementById('authUser').value.trim();
+  const pass = document.getElementById('authPass').value;
+  if(user === AUTH_USER && pass === AUTH_PASS){
+    setAuthState(true, false);
+    hideAuthModal();
+    showAuthMessage('Acceso concedido');
+  } else {
+    showAuthMessage('Usuario o contraseña incorrectos', true);
+  }
+}
+
+function loadArchivedWeeks(){
+  if(!isAuthenticated) return;
+  openWeeklyDb().then((db) => new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, 'readonly');
+    const store = tx.objectStore(DB_STORE);
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  })).then((records) => {
+    archivedWeeks = (records || []).sort((a, b) => String(b.weekKey || '').localeCompare(String(a.weekKey || '')));
+    renderArchivedWeeks();
+  }).catch(() => {
+    archivedWeeks = [];
+    renderArchivedWeeks();
+  });
+}
+
+function renderArchivedWeeks(){
+  const detailEl = document.getElementById('archiveDetail');
+  const selectEl = document.getElementById('archiveWeekSelect');
+  if(!detailEl) return;
+  if(!archivedWeeks.length){
+    detailEl.innerHTML = '';
+    if(selectEl){
+      selectEl.innerHTML = '<option value="">No hay semanas archivadas</option>';
+      selectEl.value = '';
+    }
+    return;
+  }
+  if(!selectedArchiveWeekKey || !archivedWeeks.some(r => r.weekKey === selectedArchiveWeekKey)){
+    selectedArchiveWeekKey = archivedWeeks[0].weekKey;
+  }
+  if(selectEl){
+    selectEl.innerHTML = archivedWeeks.map((record) => `
+      <option value="${escapeHtml(record.weekKey || '')}" ${record.weekKey === selectedArchiveWeekKey ? 'selected' : ''}>
+        ${escapeHtml(record.weekLabel || record.weekKey || 'Semana')}
+      </option>
+    `).join('');
+    selectEl.value = selectedArchiveWeekKey || '';
+  }
+
+  const selected = archivedWeeks.find((record) => record.weekKey === selectedArchiveWeekKey);
+  if(!selected){
+    detailEl.innerHTML = '';
+    return;
+  }
+  const employees = Array.isArray(selected.employees) ? selected.employees : [];
+  detailEl.innerHTML = `
+    <h4>${escapeHtml(selected.weekLabel || selected.weekKey || 'Semana')}</h4>
+    <div class="archive-table-wrap">
+      <table class="archive-table">
+        <thead>
+          <tr><th>Empleado</th><th>Contrato</th><th>Horas</th><th>Prima</th></tr>
+        </thead>
+        <tbody>
+          ${employees.map((emp) => `
+            <tr>
+              <td>${escapeHtml(emp.name || '-')}</td>
+              <td>${escapeHtml(emp.contract || '-')}</td>
+              <td>${secondsToHMS(totalSecondsFor(emp))}</td>
+              <td>${moneyDollar(Math.ceil(totalSecondsFor(emp)/3600)*PRIMA_RATE)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+document.getElementById('tbody').addEventListener('input', (e)=>{
+  const id = parseInt(e.target.dataset.id);
+  const emp = state.find(x=>x.id===id);
+  if(!emp) return;
+
+  if(e.target.dataset.day !== undefined){
+    const dayIdx = parseInt(e.target.dataset.day);
+    const digits = e.target.value.replace(/\D/g,'');
+    const formatted = hmsStringFromDigits(digits);
+    e.target.value = formatted;
+    emp.hours[dayIdx] = hmsStringToSeconds(formatted);
+    emp.serviceActive[dayIdx] = false;
+    emp.serviceStart[dayIdx] = null;
+    const totalCell = e.target.closest('tr').querySelector('.total-horas');
+    totalCell.textContent = secondsToHMS(totalSecondsFor(emp));
+    const primaCell = e.target.closest('tr').querySelector('.prima-value');
+    const secs = totalSecondsFor(emp);
+    const p = Math.ceil(secs/3600) * PRIMA_RATE;
+    if(primaCell) primaCell.textContent = moneyDollar(p);
+    computeTotals();
+    saveState();
+    return;
+  }
+
+  const field = e.target.dataset.field;
+  if(field === 'name'){ emp.name = e.target.value; saveState(); return; }
+});
+
+document.getElementById('tbody').addEventListener('change', (e)=>{
+  const id = parseInt(e.target.dataset.id);
+  const emp = state.find(x=>x.id===id);
+  if(!emp) return;
+  const field = e.target.dataset.field;
+  if(field === 'contract'){
+    emp.contract = e.target.value;
+    render();
+    saveState();
+  }
+});
+
+document.getElementById('tbody').addEventListener('click', (e)=>{
+  const serviceBtn = e.target.closest('[data-action="toggle-service"]');
+  if(serviceBtn){
+    const id = parseInt(serviceBtn.dataset.id);
+    const dayIdx = parseInt(serviceBtn.dataset.day);
+    const emp = state.find(x=>x.id===id);
+    if(!emp) return;
+    if(emp.serviceActive[dayIdx]){
+      const now = Date.now();
+      const started = Number(emp.serviceStart[dayIdx]) || now;
+      emp.hours[dayIdx] += Math.max(0, Math.floor((now - started) / 1000));
+      emp.serviceActive[dayIdx] = false;
+      emp.serviceStart[dayIdx] = null;
+    } else {
+      emp.serviceActive[dayIdx] = true;
+      emp.serviceStart[dayIdx] = Date.now();
+    }
+    render();
+    saveState();
+    return;
+  }
+
+  if(e.target.dataset.action === 'delete'){
+    const id = parseInt(e.target.dataset.id);
+    state = state.filter(x=>x.id!==id);
+    render();
+    saveState();
+  }
+});
+
+document.getElementById('addRowBtn').addEventListener('click', ()=>{
+  state.push(mk("","Empleado/a"));
+  render();
+  saveState();
+});
+
+document.getElementById('viewToggleBtn').addEventListener('click', toggleView);
+document.getElementById('addPoliceRowBtn').addEventListener('click', ()=>{
+  policeRows.push({id: Date.now(), day:'', plate:'', menuType:''});
+  renderPoliceTable();
+  savePoliceState();
+});
+
+document.getElementById('policeTbody').addEventListener('input', (e)=>{
+  const id = parseInt(e.target.dataset.id);
+  const row = policeRows.find(x=>x.id===id);
+  if(!row) return;
+  const field = e.target.dataset.field;
+  if(field === 'day') row.day = e.target.value;
+  if(field === 'plate') row.plate = e.target.value;
+  savePoliceState();
+});
+
+document.getElementById('policeTbody').addEventListener('change', (e)=>{
+  const id = parseInt(e.target.dataset.id);
+  const row = policeRows.find(x=>x.id===id);
+  if(!row) return;
+  if(e.target.dataset.field === 'menuType'){
+    row.menuType = e.target.value;
+    renderPoliceMenuTotal();
+    savePoliceState();
+  }
+});
+
+document.getElementById('policeTbody').addEventListener('click', (e)=>{
+  const todayBtn = e.target.closest('[data-action="set-today-date"]');
+  if(todayBtn){
+    const id = parseInt(todayBtn.dataset.id);
+    const row = policeRows.find(x=>x.id===id);
+    if(row){
+      const today = new Date();
+      const formatted = `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()}`;
+      row.day = formatted;
+      renderPoliceTable();
+      savePoliceState();
+    }
+    return;
+  }
+
+  const btn = e.target.closest('[data-action="delete-police"]');
+  if(!btn) return;
+  const id = parseInt(btn.dataset.id);
+  policeRows = policeRows.filter(x=>x.id!==id);
+  if(!policeRows.length) policeRows = createInitialPoliceRows();
+  renderPoliceTable();
+  savePoliceState();
+});
+
+document.getElementById('loginBtn').addEventListener('click', handleLogin);
+document.getElementById('authUser').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') handleLogin(); });
+document.getElementById('authPass').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') handleLogin(); });
+document.getElementById('openAuthBtn').addEventListener('click', ()=>{
+  if(isAuthenticated){
+    setAuthState(false, false);
+    showAuthMessage('');
+    document.getElementById('authUser').value = '';
+    document.getElementById('authPass').value = '';
+  } else {
+    showAuthModal();
+  }
+});
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  setAuthState(false, false);
+  showAuthMessage('');
+  document.getElementById('authUser').value = '';
+  document.getElementById('authPass').value = '';
+});
+document.getElementById('archiveWeekSelect').addEventListener('change', (e)=>{
+  selectedArchiveWeekKey = e.target.value;
+  renderArchivedWeeks();
+});
+
+document.getElementById('weekLabel').addEventListener('input', (e)=>{
+  currentWeekLabel = e.target.value;
+  saveState();
+});
+
+async function finalizeWeekAndReset(){
+  const nextWeekKey = getWeekKey();
+  if(!currentWeekKey || nextWeekKey === currentWeekKey) return;
+  await saveCurrentWeekToDb(currentWeekKey, currentWeekLabel, state);
+  state = createInitialState();
+  currentWeekKey = nextWeekKey;
+  currentWeekLabel = formatWeekLabel();
+  setWeekLabel(currentWeekLabel);
+  saveState();
+  render();
+}
+
+window.addEventListener('beforeunload', saveState);
+setInterval(()=>{
+  const nowWeekKey = getWeekKey();
+  if(nowWeekKey !== currentWeekKey){
+    finalizeWeekAndReset();
+  } else if(state.some(emp=>emp.serviceActive.some(Boolean))) render();
+}, 60000);
+
+loadState();
+render();
+renderPoliceTable();
+clearDemoArchivedWeek().catch(()=>{});
+setView(currentView);
+const rememberedAuth = localStorage.getItem('koi-auth') === '1';
+setAuthState(rememberedAuth, false);
+</script>
+</body>
+</html>
