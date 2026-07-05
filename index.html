@@ -685,73 +685,105 @@ function normalizePoliceRows(arr){
   })).filter(row => row.day || row.plate || row.menuType || row.id);
 }
 
-function savePoliceState(){
-  localStorage.setItem(POLICE_STORAGE_KEY, JSON.stringify(policeRows));
-  localStorage.setItem(VIEW_STORAGE_KEY, currentView);
-}
+const API_URL = "https://koi-api.antoniocc7-games.workers.dev";
 
-function loadPoliceState(){
-  try {
-    const saved = localStorage.getItem(POLICE_STORAGE_KEY);
-    policeRows = normalizePoliceRows(saved ? JSON.parse(saved) : []);
-  } catch {
-    policeRows = createInitialPoliceRows();
-  }
-  if(!policeRows.length) policeRows = createInitialPoliceRows();
-  const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
-  currentView = savedView === 'police' ? 'police' : 'kitchen';
-}
-
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  localStorage.setItem(WEEK_KEY, currentWeekKey);
-  localStorage.setItem(WEEK_LABEL_KEY, currentWeekLabel);
-  savePoliceState();
-  if(currentWeekKey){
-    saveCurrentWeekToDb(currentWeekKey, currentWeekLabel, state).catch(()=>{});
+async function savePoliceState(){
+  try{
+    await fetch(`${API_URL}/save`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        type:"police",
+        policeRows,
+        currentView
+      })
+    });
+  }catch(err){
+    console.error("Error guardando policía:",err);
   }
 }
 
-function loadState(){
-  currentWeekKey = getWeekKey();
-  const savedWeekKey = localStorage.getItem(WEEK_KEY);
-  const savedWeekLabel = localStorage.getItem(WEEK_LABEL_KEY);
-  const savedState = localStorage.getItem(STORAGE_KEY);
+async function loadPoliceState(){
+  try{
+    const response = await fetch(`${API_URL}/load`);
+    const data = await response.json();
 
-  if(savedWeekKey && savedWeekKey !== currentWeekKey && savedState){
-    try {
-      saveCurrentWeekToDb(savedWeekKey, savedWeekLabel || formatWeekLabel(new Date(savedWeekKey)), JSON.parse(savedState));
-    } catch {
-      saveCurrentWeekToDb(savedWeekKey, savedWeekLabel || formatWeekLabel(new Date(savedWeekKey)), []);
+    if(data.policeRows){
+      policeRows = normalizePoliceRows(data.policeRows);
+    }else{
+      policeRows = createInitialPoliceRows();
     }
-  }
 
-  if(savedState && savedWeekKey === currentWeekKey){
-    try {
-      state = normalizeState(JSON.parse(savedState));
-    } catch {
+    currentView = data.currentView || "kitchen";
+
+  }catch(err){
+    console.error("Error cargando policía:",err);
+    policeRows = createInitialPoliceRows();
+    currentView = "kitchen";
+  }
+}
+
+async function saveState(){
+
+  const payload = {
+    state: serializeState(state),
+    currentWeekKey,
+    currentWeekLabel,
+    policeRows,
+    currentView
+  };
+
+  try{
+    await fetch(`${API_URL}/save`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(payload)
+    });
+  }catch(err){
+    console.error("Error guardando:",err);
+  }
+}
+
+async function loadState(){
+
+  try{
+    const response = await fetch(`${API_URL}/load`);
+    const data = await response.json();
+
+    if(data.state){
+      state = normalizeState(data.state);
+    }else{
       state = createInitialState();
     }
-  } else {
+
+    currentWeekKey = data.currentWeekKey || getWeekKey();
+    currentWeekLabel = data.currentWeekLabel || formatWeekLabel();
+
+    setWeekLabel(currentWeekLabel);
+
+    policeRows = normalizePoliceRows(
+      data.policeRows || []
+    );
+
+    currentView = data.currentView || "kitchen";
+
+  }catch(err){
+
+    console.error("Error cargando:",err);
+
     state = createInitialState();
+    currentWeekKey = getWeekKey();
+    currentWeekLabel = formatWeekLabel();
+    policeRows = createInitialPoliceRows();
+    currentView = "kitchen";
   }
 
-  if(state.length){
-    uid = state.reduce((max, emp)=>Math.max(max, emp.id), 0) + 1;
-  } else {
-    state = createInitialState();
-    uid = state.reduce((max, emp)=>Math.max(max, emp.id), 0) + 1;
-  }
-
-  const nextLabel = formatWeekLabel();
-  if(savedWeekKey === currentWeekKey && savedWeekLabel){
-    setWeekLabel(savedWeekLabel);
-  } else {
-    setWeekLabel(nextLabel);
-  }
-
-  loadPoliceState();
-  saveState();
+  render();
+  renderPoliceTable();
 }
 
 /* ---------- duration (H:MM:SS) masking ---------- */
@@ -1216,9 +1248,11 @@ setInterval(()=>{
   } else if(state.some(emp=>emp.serviceActive.some(Boolean))) render();
 }, 60000);
 
-loadState();
-render();
-renderPoliceTable();
+(async ()=>{
+   await loadState();
+   render();
+   renderPoliceTable();
+})();
 clearDemoArchivedWeek().catch(()=>{});
 setView(currentView);
 const rememberedAuth = localStorage.getItem('koi-auth') === '1';
